@@ -1,0 +1,41 @@
+[general]
+ui         = TTY.TTYUI
+accounts   = <account>
+pythonfile = ~/.offlineimap/functions.py
+fsync      = False
+
+[Account <account>]
+localrepository  = <account>-local
+remoterepository = <account>-remote
+status_backend   = sqlite
+
+[Repository <account>-local]
+type         = Maildir
+localfolders = ~/.mail/<account>.com
+nametrans    = lambda folder: {'drafts':  '[Gmail]/Drafts',
+                               'sent':    '[Gmail]/Sent Mail',
+                               'flagged': '[Gmail]/Starred',
+                               'trash':   '[Gmail]/Trash',
+                               'archive': '[Gmail]/All Mail'
+                               }.get(folder, folder)
+
+[Repository <account>-remote]
+maxconnections = 1
+type           = Gmail
+remoteuser     = <account>
+remotepasseval = get_keychain_pass(account="<account>", server="imap.gmail.com")
+realdelete     = no
+sslcacertfile  = <cert-file-path>
+nametrans      = lambda folder: {'[Gmail]/Drafts':    'drafts',
+                            '[Gmail]/Sent Mail': 'sent',
+                            '[Gmail]/Starred':   'flagged',
+                            '[Gmail]/Trash':     'trash',
+                            '[Gmail]/All Mail':  'archive',
+                            }.get(folder, folder)
+folderfilter   = lambda folder: folder not in ['[Gmail]/Trash',
+                                             'Nagios',
+                                             'Django',
+                                             'Flask',
+                                             '[Gmail]/Important',
+                                             '[Gmail]/Spam',
+                                             ]
